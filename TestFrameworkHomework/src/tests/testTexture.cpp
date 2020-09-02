@@ -3,7 +3,7 @@
 
 namespace tester
 {
-	/*After this program runs for a long period of time there is a write access violation in the stb_image.cpp file
+	/*After this program runs for a long period of time there is a write access violation in the stb_image.cpp file on line 3970
 	To debug this I might need to look at the stb_image documentation more closely possibly even learning more in depth
 	how png buffers are formated... Pretty much all warnings have to do with the imGUI files and nothing to do with the
 	stb_image or any of the files I have created. There is one warning in the shaders but I have made sure it handles
