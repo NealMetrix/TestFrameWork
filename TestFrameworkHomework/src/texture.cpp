@@ -1,13 +1,10 @@
 #include "texture.h"
 #include "stb/stb_image.h"
 
-texture::texture(const std::string& path)
-	:m_rendererID(0),m_filePath(path),m_localBuffer(nullptr),m_width(0),m_height(0),m_BPP(0)
+texture::texture()
+	:m_rendererID(0),m_filePath("res/texture/NeaLeonardoLogo.png"),m_localBuffer(nullptr),m_width(0),m_height(0),m_BPP(0)
 {
-	stbi_set_flip_vertically_on_load(1);//flips texture as soon as it's loaded
-	/*This flips our texture vertially Remember that bottom left is 0,0. png stores it in scan lines from top to bottom*/
-
-	m_localBuffer = stbi_load(path.c_str(),&m_width,&m_height,&m_BPP,4);
+	/*Moved loading the pixel buffer into the new setTexture method*/
 
 	GLcall(glGenTextures(1, &m_rendererID));
 	GLcall(glBindTexture(GL_TEXTURE_2D,m_rendererID));
@@ -18,8 +15,7 @@ texture::texture(const std::string& path)
 	GLcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	GLcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-	GLcall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
-	/*Now we are sending all the data that is inside m_localBuffer to OpenGL. Read documentation for more info*/
+	setTexture(m_filePath);
 
 	GLcall(glBindTexture(GL_TEXTURE_2D, 0));/*texture not bound by default*/
 
@@ -39,4 +35,11 @@ void texture::bind(unsigned int slot)const
 void texture::unbind()const
 {
 	GLcall(glBindTexture(GL_TEXTURE_2D, 0));
+}
+void texture::setTexture(std::string file_path)/*This is how we now set the pixel buffer*/
+{
+	m_filePath = file_path;
+	stbi_set_flip_vertically_on_load(1);
+	m_localBuffer = stbi_load(m_filePath.c_str(), &m_width, &m_height, &m_BPP, 4);
+	GLcall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
 }

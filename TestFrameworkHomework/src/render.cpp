@@ -30,5 +30,6 @@ void renderPipeline::draw(const VertexArray& va, const IndexBuffer& ib, const sh
 }
 void renderPipeline::clear()const
 {
+    glClearColor(0.0, 0.5, 0.0, 1.0);
     GLcall(glClear(GL_COLOR_BUFFER_BIT));/*Here we make it so clearing it is a method of the renderPipeline*/
 }

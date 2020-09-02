@@ -4,28 +4,21 @@
 
 namespace tester
 {
-	mainMenu::mainMenu()
-		:m_ButtonValue(0)
+	mainMenu::mainMenu(test*& testPtr)
+		:m_currentTest(testPtr)
 	{
-
-	}
-	mainMenu::~mainMenu()
-	{
-
-	}
-	void mainMenu::onUpdate(float&)
-	{
-
-	}
-	void mainMenu::onRender()
-	{
-		glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		/*What needs to happen*/
 	}
 	void mainMenu::onImGuiRender()
 	{
-		if (ImGui::Button("Clear Color Test"))
-			m_ButtonValue++;
-		ImGui::Text("Button Value: %d", m_ButtonValue);
+		/*When do I want to create all the buttons in the vector*/
+		for (unsigned int i = 0; i<m_tests.size(); i++)
+		{
+			if (ImGui::Button(m_tests.at(i).name))
+			{
+				m_currentTest = m_tests.at(i).testGenerator();
+			}
+		}
+		//ImGui::Text("Button Value: %d", m_ButtonValue);
 	}
 }

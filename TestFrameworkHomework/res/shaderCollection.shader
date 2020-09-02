@@ -6,7 +6,7 @@ layout(location = 1) in vec2 texCoord;
 
 out vec2 v_texCoord;
 
-uniform mat4 uniformMVP;/*Our model view projection matrix.*/
+uniform mat4 uniformMVP;
 
 void main()
 {
@@ -22,7 +22,6 @@ out vec4 color;
 
 in vec2 v_texCoord;
 
-uniform vec4 u_color;
 uniform sampler2D u_texture;
 
 void main()

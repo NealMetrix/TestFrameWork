@@ -12,7 +12,6 @@ class shaders
 private:
 	const std::string m_filepath;
 	unsigned int m_rendererID;
-	//need a caching system for uniforms
 	std::unordered_map<std::string, int> m_uniformLocationCache;
 public:
 	shaders(const std::string& filepath);

@@ -10,11 +10,12 @@ private:
 	int m_width, m_height, m_BPP;/*Stores data of each pixel such as width height and bits per pixel of the texture*/
 
 public:
-	texture(const std::string& path);
+	texture();
 	~texture();
 
 	void bind( unsigned int slot = 0)const;
 	void unbind()const;
+	void setTexture(std::string file_path);
 
 	inline int getwidth()const { return m_width; }
 	inline int getheight()const { return m_height; }

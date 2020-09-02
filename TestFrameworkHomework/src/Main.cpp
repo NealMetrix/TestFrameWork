@@ -17,7 +17,9 @@
 #include "imgui-1.6.0/imgui_impl_glfw_gl3.h"
 
 #include "tests/TestClearColor.h"
+#include "tests/testTexture.h"
 #include "tests/testsMainMenu.h"
+#include "tests/ImGuiTest.h"
 
 /*This is where I do Cherno's homework and work on making a menu that takes us to all of our tests.*/
 
@@ -48,45 +50,66 @@ int main(void)
     glfwSwapInterval(1);
     glewInit();
 
-    std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl << std::endl;//This prints the version of OpenGL we are using
+    std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl << std::endl;
 
-    {//Start of scope to destroy stack allocated Buffers
-        GLcall(glEnable(GL_BLEND));/*Be sure to enable blending*/
-        GLcall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        renderPipeline renderOb;/*Here we create our render object*/
+    GLcall(glEnable(GL_BLEND));
+    GLcall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        ImGui::CreateContext();/*Creating a current context of ImGui*/
-        ImGui_ImplGlfwGL3_Init(window, true);/*Feeding data to the window*/
-        ImGui::StyleColorsDark();/*Setting the style to dark. Just a style preference*/
+    renderPipeline renderOb;/*Here we create our render object*/
 
-        unsigned int windowValue = 1;
-        tester::mainMenu menu;/*If I put an if statement around this it will end the scope too early*/
+    ImGui::CreateContext();/*Creating a current context of ImGui*/
+    ImGui_ImplGlfwGL3_Init(window, true);/*Feeding data to the window*/
+    ImGui::StyleColorsDark();/*Setting the style to dark. Just a style preference*/
+
+    tester::test* currentTestPtr = nullptr;
+    tester::mainMenu menu(currentTestPtr);
+    currentTestPtr = &menu;
+    /*I might want to put menu on the heap just for consistancies sake but then again is there a way to put
+    all of them on the stack? No because as far as I know you can't create a stack object.... Well I don't know, if you had the lambda
+    return it's own object instance memory address then you might be able create it on the stack. That's probably why cherno used smart pointers
+    to keep track of the other classes so he didn't have to delete anything and didn't want to find a way to put them on the stack.*/
         
-        /*Can I create a lambda that make different object instances*/
+    /*When you register a lambda you are setting the ptr to a new location*/
+    menu.testRegister<tester::testTexture>("Texture Test");
+    menu.testRegister<tester::imGuiDemo>("ImGUI Demo");
+    menu.testRegister<tester::testClearColor>("Clear Color Test");
 
-        /* Loop until the user closes the window */
-        while (!glfwWindowShouldClose(window))
+    /* Loop until the user closes the window */
+    while (!glfwWindowShouldClose(window))
+    {
+        /* Render here */
+        renderOb.clear();
+
+        /*Still not sure what Cherno's intentions were when having us build this onUpdate*/
+        ImGui_ImplGlfwGL3_NewFrame();
+        if (currentTestPtr)
         {
-            /* Render here */
-            renderOb.clear();
+            currentTestPtr->onUpdate();
+            currentTestPtr->onRender();
+            /*I want to only have ImGui::Begin run if the type isn't imGuiDemo*/
+            ImGui::Begin("Tests");
+            currentTestPtr->onImGuiRender();
 
-            menu.onRender();
-
-            ImGui_ImplGlfwGL3_NewFrame();
-
-            ImGui::CreateContext();
-            menu.onImGuiRender();
-
-            ImGui::Render();
-            ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
-
-            glfwSwapBuffers(window);
-
-            glfwPollEvents();
+            if (currentTestPtr != &menu && ImGui::Button("<-Menu"))
+            {
+                delete currentTestPtr;
+                currentTestPtr = &menu;
+            }
+            ImGui::End();
         }
-        
-    }//scope of buffers ends right before GLFW Terminate
+
+        ImGui::CreateContext();
+        ImGui::Render();
+        ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
+
+        glfwPollEvents();
+    }
+    if (currentTestPtr != &menu)
+        delete currentTestPtr;
+
     /*Destroying the ImGui context*/
     ImGui_ImplGlfwGL3_Shutdown();
     ImGui::DestroyContext();

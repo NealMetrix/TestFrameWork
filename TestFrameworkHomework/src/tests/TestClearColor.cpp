@@ -12,7 +12,7 @@ namespace tester
 	{
 
 	}
-	void testClearColor::onUpdate(float& deltaTime)
+	void testClearColor::onUpdate()
 	{
 
 	}
@@ -23,7 +23,6 @@ namespace tester
 	}
 	void testClearColor::onImGuiRender()
 	{
-		ImGui::ColorEdit4("Clear Color", m_clearColor);/*We set it up so there is a color picker that displays the 
-													   default background with imGui so we can interact with it.*/
+		ImGui::ColorEdit4("Clear Color", m_clearColor);
 	}
 }
